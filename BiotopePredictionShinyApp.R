@@ -1,6 +1,5 @@
 
-#setwd("Y:/C7331_Marine Aggregate Reg/Working_Area/C7331_E FAUNAL GROUP PREDICTION")
-#setwd("Y:/C7912_Marine_Aggregate_Reg/Working_Area/C7331/C7331_E FAUNAL GROUP PREDICTION")
+## Set working directory
 setwd('C:/Users/kmc00/OneDrive - CEFAS/R_PROJECTS/BiotopePredictionShinyApp')
 
 ## Call required libraries
@@ -12,43 +11,36 @@ library(rgdal)
 library(mapview)
 library(raster)
 library(plyr)
+library(shiny)
 
-#### BRING IN REQUIRED DATA ####
+
+#### 1. BRING IN REQUIRED DATA ####
 
 ## Bring in baseline data for faunal clustering (for use in maps)
 faunal.cluster=read.csv("DATA/BaselineFaunalCluster2.csv",header=T,na.strings=c("NA", "-","?","<null>"),stringsAsFactors=F,check.names=FALSE)
-#View(faunal.cluster)
 
 ## Bring in baseline kcca object
 resultsA <- readRDS("DATA/resultsA")
-#resultsA
 
 ## Bring in baseline cluster results object
 results <- readRDS("DATA/results")
 
-## 24/05/2019
-#data=read.csv("OUTPUTS/ShinyTemplateCompletedNWJB.csv",header=T,na.strings=c("NA", "-","?","<null>"),stringsAsFactors=F,check.names=FALSE)
-#View(data)
-#dim(data)
-#str(data)
 ## Baseline sample - muted colours 
 BaseCol <- colorFactor(c("#9999F8","#99FFFF","#9BDDE6","#F8DEF8","#D6ADEB","#99EB99","#D6FFD6","#E19999","#FF9999","#FFD199","#FFFF99","#E1E19A"), faunal.cluster$FaunalCluster)
 
 ## Baseline sample - full colours 
 #BaseCol <- colorFactor(c("blue2","cyan1","#05aae1","plum2","darkorchid3","green3","palegreen1","#b40202","red1","darkorange","yellow","#b4b404"), faunal.cluster$FaunalCluster)
 
-
-#####################################################
-#v7
 ## Bring in raster data for phycluster
-#phyclus = raster('DATA/FINAL_MODEL/PhysicalCluster/PhysicalClusterClip.tif')
 phyclus = raster('DATA/PhysicalClusterClip.tif')
 
 ## Create layer for 'Licensed' polygons
 #licence = readOGR("DATA","Aggregates_Licence_20151112")
 
 #mcz = readOGR("DATA","DESIGNATED")
-#####################################################
+
+## Bring in distances, z-scores and percentiles for baseline dataset
+basedist=read.csv("DATA/DistancetoCentersTrain6.csv",header=T,na.strings=c("NA", "-","?","<null>"),stringsAsFactors=F,check.names=FALSE)
 
 ## Mean and sd for baseline cluster distances
 meanA1dist=7.998403
@@ -75,16 +67,10 @@ meanD2cdist=2.963243
 sdD2cdist=0.9613814
 meanD2ddist=4.420252
 sdD2ddist=0.906758
-#############################################################
-## 04/06/2019
-## Bring in distances, z-scores and percentiles for baseline dataset
-basedist=read.csv("DATA/DistancetoCentersTrain6.csv",header=T,na.strings=c("NA", "-","?","<null>"),stringsAsFactors=F,check.names=FALSE)
 
 ## Check baseline dataset and baseline distance from clustering have same length
 dim(basedist)#[1] 27432    42
 dim(faunal.cluster)# 27432     7
-View(basedist)
-names(basedist)
 
 ## Delete irrelevant values
 basedist$zA1[basedist$FaunalCluster !=  "A1"] <- 0
@@ -114,14 +100,13 @@ basedist$pD2c[basedist$FaunalCluster !=  "D2c"] <- 0
 basedist$pD2d[basedist$FaunalCluster !=  "D2d"] <- 0
 
 ## Add new cols for zscore and percentile
-
 basedist$zscore <- do.call(`pmax`, basedist[16:27])
 basedist$percentile <- do.call(`pmax`, basedist[28:39])
 names(basedist)
+
 ## Take only required columns
 basedist2=basedist[,c(1:15,41,42,40)]
-View(basedist2)
-names(basedist2)
+
 ## Change numeric columns to 1dp
 is.num <- sapply(basedist2, is.numeric)
 basedist2[is.num] <- lapply(basedist2[is.num], round, 1)
@@ -131,8 +116,7 @@ faunal.cluster2=cbind(faunal.cluster,basedist2[,4:18])
 names(faunal.cluster2)
 
 
-#################
-library(shiny)
+#### 2. APP USER INTERFACE ####
 
 ui <- fluidPage(
   # Application title
@@ -167,14 +151,16 @@ ui <- fluidPage(
              tabPanel("Percentiles",div(DT::dataTableOutput("percentiles"),style = 'font-size:85%'),br()),
              tabPanel("About",
                       br(),
-                      p("This tool matches new faunal data to the existing faunal cluster groups identified in Cooper and Barry (2017, http://rdcu.be/wi6C). The template includes all families from the baseline dataset, and matching is achieved using the 'predict' function.")))
+                      p("This tool matches new faunal data to the existing faunal cluster groups identified in Cooper and Barry (2017, http://rdcu.be/wi6C). For a full decription of the methodology see Cooper (2019).",
+                        br(),
+                        br(),"The physical cluster group shown in the table is also based on work of Cooper and Barry (2017). Sampling stations are partitioned into 10 groups based on a k-means clustering of physical variables (Salinity, Temperature, Chlorophyll a, Suspended Particulate Matter, Water depth, Wave Orbital Velocity, Average current, Stress and Suspended Particulate Matter). Within the app, test sample coordinates are used to extract the physical cluster group from a 100% coverage geotiff file. This file was created using Random Forest modelling of point sample data. Knowledge of the physical cluster group identity of sampling stations is required for the Regional Seabed Monitoring Programme (RSMP).")))
            
     )))
 
 textAlign = 'center'
 
 
-############### SERVER ####################################################################################
+#### 3. APP SERVER ####
 
 
 server <- function(input, output) {
@@ -217,8 +203,7 @@ server <- function(input, output) {
   
   
   
-  ################
-  ###############
+
   
   ## Create the object with no values
   res <- reactiveValues(k_st = NULL)
@@ -374,14 +359,10 @@ server <- function(input, output) {
       ## Now use predict function to predict cluster groups for test data.
       pred_test <- predict(resultsA, newdata=ShinyTemplate4)
       
-      #####################################################
-      #v7
+
       ## Get  phy cluster groupo from raster
       Phy <- extract(phyclus,  pos.test[,3:2])
-      
-      
-      
-      #####################################################
+
       
       ## Add cluster group from kmeans results file to df 'pos' which includes 'Sample',
       # 'Latitude_WGS84' and 'Longitude_WGS84'
@@ -431,9 +412,7 @@ server <- function(input, output) {
     }
   })
   
-  ###############################################################################
-  ###############################################################################
-  ## 24/05/2019
+
   output$distances <- DT::renderDataTable({
     
     if ( !is.null(res$k_st) )  {
@@ -450,15 +429,13 @@ server <- function(input, output) {
       ## Now use predict function to predict cluster groups for test data.
       pred_test <- predict(resultsA, newdata=ShinyTemplate4)
       
-      #####################################################
-      #v7
+
       ## Get  phy cluster groupo from raster
       Phy <- extract(phyclus,  pos.test[,3:2])
       
       
       
-      #####################################################
-      
+ 
       ## Add cluster group from kmeans results file to df 'pos' which includes 'Sample',
       # 'Latitude_WGS84' and 'Longitude_WGS84'
       faunal.cluster.test=cbind(pos.test,pred_test,Phy)#,physdata
@@ -560,9 +537,7 @@ server <- function(input, output) {
     }
   })
   
-  ###############################################################################
-  ###############################################################################
-  ## 03/06/2019
+ ## Z-SCORES
   output$zscores <- DT::renderDataTable({
     
     if ( !is.null(res$k_st) )  {
@@ -579,15 +554,12 @@ server <- function(input, output) {
       ## Now use predict function to predict cluster groups for test data.
       pred_test <- predict(resultsA, newdata=ShinyTemplate4)
       
-      #####################################################
-      #v7
+
       ## Get  phy cluster groupo from raster
       Phy <- extract(phyclus,  pos.test[,3:2])
       
       
-      
-      #####################################################
-      
+ 
       ## Add cluster group from kmeans results file to df 'pos' which includes 'Sample',
       # 'Latitude_WGS84' and 'Longitude_WGS84'
       faunal.cluster.test=cbind(pos.test,pred_test,Phy)#,physdata
@@ -722,10 +694,9 @@ server <- function(input, output) {
       #pos.test
     }
   }) 
+
   
-  #############################################################################
-  ##############################################################################
-  ## 03/06/2019
+  ## Percentiles
   output$percentiles <- DT::renderDataTable({
     
     if ( !is.null(res$k_st) )  {
@@ -742,14 +713,11 @@ server <- function(input, output) {
       ## Now use predict function to predict cluster groups for test data.
       pred_test <- predict(resultsA, newdata=ShinyTemplate4)
       
-      #####################################################
-      #v7
+ 
       ## Get  phy cluster groupo from raster
       Phy <- extract(phyclus,  pos.test[,3:2])
       
-      
-      
-      #####################################################
+
       
       ## Add cluster group from kmeans results file to df 'pos' which includes 'Sample',
       # 'Latitude_WGS84' and 'Longitude_WGS84'
@@ -901,8 +869,7 @@ server <- function(input, output) {
     }
   })
   
-  #############################################################################
-  ##############################################################################
+
   output$downloadData <- downloadHandler(
     filename = function() {
       paste("download",".csv",sep="")#data2-",Sys.Date(),
@@ -967,9 +934,4 @@ server <- function(input, output) {
 }
 
 
-
-
-
-
 shinyApp(ui, server)
-
