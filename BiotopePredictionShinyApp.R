@@ -138,7 +138,7 @@ ui <- fluidPage(
            h4("3. ID Faunal groups"),
            actionButton("match","Match")),
     
-    column(5,leafletOutput("plot2",width = "100%", height="800px")), 
+    column(5,leafletOutput("plot2",width = "100%", height="850px")), 
            #br(),
            #downloadButton("downloadPlot", "Download plot"),style='border-left: 1px solid grey'),
     
