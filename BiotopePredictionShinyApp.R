@@ -14,11 +14,6 @@ library(plyr)
 library(shiny)
 
 
-## Run this otherwise map fails to load
-leaflet() %>%
-  addProviderTiles(providers$Esri.OceanBasemap,options = providerTileOptions(noWrap = TRUE))
-
-
 #### 1. BRING IN REQUIRED DATA ####
 
 ## Bring in baseline data for faunal clustering (for use in maps)
@@ -142,7 +137,7 @@ ui <- fluidPage(
            h4("3. ID Faunal groups"),
            actionButton("match","Match")),
     
-    column(5,leafletOutput("plot2",height=800)), 
+    column(5,leafletOutput("plot2",width = "100%", height="800px")), 
            #br(),
            #downloadButton("downloadPlot", "Download plot"),style='border-left: 1px solid grey'),
     
