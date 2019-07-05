@@ -143,6 +143,7 @@ ui <- fluidPage(
            #downloadButton("downloadPlot", "Download plot"),style='border-left: 1px solid grey'),
     
     
+    
     column(5,style='border-left: 1px solid grey',
            tabsetPanel(
              tabPanel("Results",div(DT::dataTableOutput("results"),style = 'font-size:90%'),br(),# Button
