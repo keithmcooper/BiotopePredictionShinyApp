@@ -149,7 +149,7 @@ ui <- fluidPage(
              tabPanel("Results",div(DT::dataTableOutput("results"),style = 'font-size:90%'),br(),# Button
                       downloadButton("downloadData", "Download table")),
              tabPanel("Distances",div(DT::dataTableOutput("distances"),style = 'font-size:85%'),br()),
-             tabPanel("Z-Scores",div(DT::dataTableOutput("zscores"),style = 'font-size:85%'),br()),
+             tabPanel("Z-scores",div(DT::dataTableOutput("zscores"),style = 'font-size:85%'),br()),
              tabPanel("Percentiles",div(DT::dataTableOutput("percentiles"),style = 'font-size:85%'),br()),
              tabPanel("About",
                       br(),
