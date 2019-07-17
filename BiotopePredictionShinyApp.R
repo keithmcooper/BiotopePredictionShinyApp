@@ -167,6 +167,7 @@ ui <- fluidPage(
              tabPanel("Distances",div(DT::dataTableOutput("distances"),style = 'font-size:85%'),br()),
              #tabPanel("Z-scores",div(DT::dataTableOutput("zscores"),style = 'font-size:85%'),br()),
              tabPanel("Percentiles",div(DT::dataTableOutput("percentiles"),style = 'font-size:85%'),br()),
+             tabPanel("Cluster Characteristics",tags$img(src="Table1.png")),
              tabPanel("About",
                       br(),
                       p("This tool matches new faunal data to the existing faunal cluster groups identified in Cooper and Barry (2017, http://rdcu.be/wi6C). For a full decription of the methodology see Cooper (2019).",
@@ -415,8 +416,9 @@ server <- function(input, output) {
       
       ## Concatenate Faunal and Physical cluster
       faunal.cluster.test$PhyFauna=paste(faunal.cluster.test$Phy,faunal.cluster.test$Fauna,sep="_")
+      names(faunal.cluster.test)[6]<-paste("Cluster")
+      faunal.cluster.test[,c(1,2,3,6,5,7)]#,6
       
-      faunal.cluster.test[,c(1,2,3,5,6,7)]#,6
     } else {
       
       
@@ -511,7 +513,7 @@ server <- function(input, output) {
       
       ## Add column for faunal cluster group
       DistancetoCentersTest2=cbind(DistancetoCentersTest[,1],faunal.cluster.test$Fauna,DistancetoCentersTest[,2:13])
-      colnames(DistancetoCentersTest2)[2]="FaunalCluster"
+      colnames(DistancetoCentersTest2)[2]="Cluster"
       colnames(DistancetoCentersTest2)[1]="Sample"
       
       ## Create a copy of'DistancetoCentersTrain3'
@@ -519,7 +521,7 @@ server <- function(input, output) {
       
       # Change cols into correct format
       DistancetoCentersTest3$Sample <- as.character(as.character(DistancetoCentersTest3$Sample))
-      DistancetoCentersTest3$FaunalCluster <- as.character(as.character(DistancetoCentersTest3$FaunalCluster))
+      DistancetoCentersTest3$Cluster <- as.character(as.character(DistancetoCentersTest3$Cluster))
       DistancetoCentersTest3$A1 <- as.numeric(as.character(DistancetoCentersTest3$A1))
       DistancetoCentersTest3$A2a <- as.numeric(as.character(DistancetoCentersTest3$A2a))
       DistancetoCentersTest3$A2b <- as.numeric(as.character(DistancetoCentersTest3$A2b))
@@ -563,7 +565,7 @@ server <- function(input, output) {
       
       ###########################ADD CODE HERE 15/07/2019 #############################
       ## Split off faunal data
-      data=read.csv("DATA/ShinyTemplateCompletedRSMP.csv",header=T,na.strings=c("NA", "-","?","<null>"),stringsAsFactors=F,check.names=FALSE)
+      #data=read.csv("DATA/ShinyTemplateCompletedRSMP.csv",header=T,na.strings=c("NA", "-","?","<null>"),stringsAsFactors=F,check.names=FALSE)
       
       ShinyTemplate3=data()[,4:706]
       #ShinyTemplate3=data[,4:706]#24/05
@@ -647,7 +649,8 @@ server <- function(input, output) {
       #### near to the most extreme of the originals in that cluster
       ####
       
-      testresults = as.data.frame(cbind(pred_test, testpercentile))
+      #testresults = as.data.frame(cbind(pred_test, testpercentile))
+      testresults = as.data.frame(cbind(pos.test[1],pred_test, testpercentile))
       str(testresults)
       
       ## Swap cluster numbers for codes
@@ -671,8 +674,9 @@ server <- function(input, output) {
       str(testresults) # TEST DATA CLUSTER GROUP AND ASSOCIATED PERCENTILE
       
       ## Change names of cols in object 'testresults'
-      names(testresults)[1]<-paste("Cluster")
-      names(testresults)[2]<-paste("Percentile")
+      names(testresults)[1]<-paste("Sample")
+      names(testresults)[2]<-paste("Cluster")
+      names(testresults)[3]<-paste("Percentile")
       testresults
       
     } else {
