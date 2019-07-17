@@ -25,7 +25,7 @@ resultsA <- readRDS("DATA/resultsA")
 
 ## Bring in baseline cluster results object
 results <- readRDS("DATA/results")
-View(results)
+
 ## Baseline sample - muted colours 
 BaseCol <- colorFactor(c("#9999F8","#99FFFF","#9BDDE6","#F8DEF8","#D6ADEB","#99EB99","#D6FFD6","#E19999","#FF9999","#FFD199","#FFFF99","#E1E19A"), faunal.cluster$FaunalCluster)
 
@@ -556,8 +556,6 @@ server <- function(input, output) {
   })
   
 
-
-  
   ## Percentiles
   output$percentiles <- DT::renderDataTable({
     
@@ -565,7 +563,7 @@ server <- function(input, output) {
       
       ###########################ADD CODE HERE 15/07/2019 #############################
       ## Split off faunal data
-      #data=read.csv("DATA/ShinyTemplateCompletedRSMP.csv",header=T,na.strings=c("NA", "-","?","<null>"),stringsAsFactors=F,check.names=FALSE)
+      data=read.csv("DATA/ShinyTemplateCompletedRSMP.csv",header=T,na.strings=c("NA", "-","?","<null>"),stringsAsFactors=F,check.names=FALSE)
       
       ShinyTemplate3=data()[,4:706]
       #ShinyTemplate3=data[,4:706]#24/05
@@ -637,7 +635,8 @@ server <- function(input, output) {
           combined = c(distfortest, distsfor12) }
         
         ## rank of sample divided by total number of samples in cluster *100
-        #combined=as.data.frame(combined)#this works but percentils are incorrect
+        #combined=as.data.frame(combined)#this works but percentiles are incorrect
+        combined=unlist(combined)
         ranktest = rank(combined)[1]
         
         testpercentile[j] = round(100*(ranktest - 0.5) / length(combined), 1)

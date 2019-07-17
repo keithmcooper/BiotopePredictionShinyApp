@@ -25,7 +25,7 @@ resultsA <- readRDS("DATA/resultsA")
 
 ## Bring in baseline cluster results object
 results <- readRDS("DATA/results")
-
+View(results)
 ## Baseline sample - muted colours 
 BaseCol <- colorFactor(c("#9999F8","#99FFFF","#9BDDE6","#F8DEF8","#D6ADEB","#99EB99","#D6FFD6","#E19999","#FF9999","#FFD199","#FFFF99","#E1E19A"), faunal.cluster$FaunalCluster)
 
@@ -41,80 +41,96 @@ phyclus = raster('DATA/PhysicalClusterClip.tif')
 #mcz = readOGR("DATA","DESIGNATED")
 
 ## Bring in distances, z-scores and percentiles for baseline dataset
-basedist=read.csv("DATA/DistancetoCentersTrain6.csv",header=T,na.strings=c("NA", "-","?","<null>"),stringsAsFactors=F,check.names=FALSE)
+basedist=read.csv("DATA/DistancetoCentersTrain4.csv",header=T,na.strings=c("NA", "-","?","<null>"),stringsAsFactors=F,check.names=FALSE)
 
 ## Mean and sd for baseline cluster distances
-meanA1dist=7.998403
-sdA1dist=1.245949
-meanA2adist=7.417848
-sdA2adist=1.305278
-meanA2bdist=6.955519
-sdA2bdist=1.017589
-meanB1adist=6.39505
-sdB1adist=0.7995207
-meanB1bdist=5.418755
-sdB1bdist=0.8244385
-meanC1adist=5.60087
-sdC1adist=0.9520959
-meanC1bdist=6.4334
-sdC1bdist=0.9144225
-meanD1dist=6.970568
-sdD1dist=1.265555
-meanD2adist=4.863829
-sdD2adist=0.9588489
-meanD2bdist=5.282591
-sdD2bdist=0.7700981
-meanD2cdist=2.963243
-sdD2cdist=0.9613814
-meanD2ddist=4.420252
-sdD2ddist=0.906758
+#meanA1dist=7.998403
+#sdA1dist=1.245949
+#meanA2adist=7.417848
+#sdA2adist=1.305278
+#meanA2bdist=6.955519
+#sdA2bdist=1.017589
+#meanB1adist=6.39505
+#sdB1adist=0.7995207
+#meanB1bdist=5.418755
+#sdB1bdist=0.8244385
+#meanC1adist=5.60087
+#sdC1adist=0.9520959
+#meanC1bdist=6.4334
+#sdC1bdist=0.9144225
+#meanD1dist=6.970568
+#sdD1dist=1.265555
+#meanD2adist=4.863829
+#sdD2adist=0.9588489
+#meanD2bdist=5.282591
+#sdD2bdist=0.7700981
+#meanD2cdist=2.963243
+#sdD2cdist=0.9613814
+#meanD2ddist=4.420252
+#sdD2ddist=0.906758
 
 ## Check baseline dataset and baseline distance from clustering have same length
 dim(basedist)#[1] 27432    42
 dim(faunal.cluster)# 27432     7
 
 ## Delete irrelevant values
-basedist$zA1[basedist$FaunalCluster !=  "A1"] <- 0
-basedist$zA2a[basedist$FaunalCluster !=  "A2a"] <- 0
-basedist$zA2b[basedist$FaunalCluster !=  "A2b"] <- 0
-basedist$zB1a[basedist$FaunalCluster !=  "B1a"] <- 0
-basedist$zB1b[basedist$FaunalCluster !=  "B1b"] <- 0
-basedist$zC1a[basedist$FaunalCluster !=  "C1a"] <- 0
-basedist$zC1b[basedist$FaunalCluster !=  "C1b"] <- 0
-basedist$zD1[basedist$FaunalCluster !=  "D1"] <- 0
-basedist$zD2a[basedist$FaunalCluster !=  "D2a"] <- 0
-basedist$zD2b[basedist$FaunalCluster !=  "D2b"] <- 0
-basedist$zD2c[basedist$FaunalCluster !=  "D2c"] <- 0
-basedist$zD2d[basedist$FaunalCluster !=  "D2d"] <- 0
+#basedist$zA1[basedist$FaunalCluster !=  "A1"] <- 0
+#basedist$zA2a[basedist$FaunalCluster !=  "A2a"] <- 0
+#basedist$zA2b[basedist$FaunalCluster !=  "A2b"] <- 0
+#basedist$zB1a[basedist$FaunalCluster !=  "B1a"] <- 0
+#basedist$zB1b[basedist$FaunalCluster !=  "B1b"] <- 0
+#basedist$zC1a[basedist$FaunalCluster !=  "C1a"] <- 0
+#basedist$zC1b[basedist$FaunalCluster !=  "C1b"] <- 0
+#basedist$zD1[basedist$FaunalCluster !=  "D1"] <- 0
+#basedist$zD2a[basedist$FaunalCluster !=  "D2a"] <- 0
+#basedist$zD2b[basedist$FaunalCluster !=  "D2b"] <- 0
+#basedist$zD2c[basedist$FaunalCluster !=  "D2c"] <- 0
+#basedist$zD2d[basedist$FaunalCluster !=  "D2d"] <- 0
 
-basedist$pA1[basedist$FaunalCluster !=  "A1"] <- 0
-basedist$pA2a[basedist$FaunalCluster !=  "A2a"] <- 0
-basedist$pA2b[basedist$FaunalCluster !=  "A2b"] <- 0
-basedist$pB1a[basedist$FaunalCluster !=  "B1a"] <- 0
-basedist$pB1b[basedist$FaunalCluster !=  "B1b"] <- 0
-basedist$pC1a[basedist$FaunalCluster !=  "C1a"] <- 0
-basedist$pC1b[basedist$FaunalCluster !=  "C1b"] <- 0
-basedist$pD1[basedist$FaunalCluster !=  "D1"] <- 0
-basedist$pD2a[basedist$FaunalCluster !=  "D2a"] <- 0
-basedist$pD2b[basedist$FaunalCluster !=  "D2b"] <- 0
-basedist$pD2c[basedist$FaunalCluster !=  "D2c"] <- 0
-basedist$pD2d[basedist$FaunalCluster !=  "D2d"] <- 0
+#basedist$pA1[basedist$FaunalCluster !=  "A1"] <- 0
+#basedist$pA2a[basedist$FaunalCluster !=  "A2a"] <- 0
+#basedist$pA2b[basedist$FaunalCluster !=  "A2b"] <- 0
+#basedist$pB1a[basedist$FaunalCluster !=  "B1a"] <- 0
+#basedist$pB1b[basedist$FaunalCluster !=  "B1b"] <- 0
+#basedist$pC1a[basedist$FaunalCluster !=  "C1a"] <- 0
+#basedist$pC1b[basedist$FaunalCluster !=  "C1b"] <- 0
+#basedist$pD1[basedist$FaunalCluster !=  "D1"] <- 0
+#basedist$pD2a[basedist$FaunalCluster !=  "D2a"] <- 0
+#basedist$pD2b[basedist$FaunalCluster !=  "D2b"] <- 0
+#basedist$pD2c[basedist$FaunalCluster !=  "D2c"] <- 0
+#basedist$pD2d[basedist$FaunalCluster !=  "D2d"] <- 0
 
 ## Add new cols for zscore and percentile
-basedist$zscore <- do.call(`pmax`, basedist[16:27])
-basedist$percentile <- do.call(`pmax`, basedist[28:39])
+#basedist$zscore <- do.call(`pmax`, basedist[16:27])
+#basedist$percentile <- do.call(`pmax`, basedist[28:39])
 names(basedist)
 
 ## Take only required columns
-basedist2=basedist[,c(1:15,41,42,40)]
+#basedist2=basedist[,c(1:15,41,42,40)]
 
 ## Change numeric columns to 1dp
-is.num <- sapply(basedist2, is.numeric)
-basedist2[is.num] <- lapply(basedist2[is.num], round, 1)
+is.num <- sapply(basedist, is.numeric)
+basedist[is.num] <- lapply(basedist[is.num], round, 1)
 
 ## Now add this distance info to the object faunal.cluster
-faunal.cluster2=cbind(faunal.cluster,basedist2[,4:18])
+faunal.cluster2=cbind(faunal.cluster,basedist[,4:17])
 names(faunal.cluster2)
+
+## Load baseline distances by cluster group
+
+distsfor1=read.csv("DATA/distsfor1.csv",header=T,na.strings=c("NA", "-","?","<null>"),stringsAsFactors=F,check.names=FALSE,col.names=NA)
+distsfor2=read.csv("DATA/distsfor2.csv",header=T,na.strings=c("NA", "-","?","<null>"),stringsAsFactors=F,check.names=FALSE,col.names=NA)
+distsfor3=read.csv("DATA/distsfor3.csv",header=T,na.strings=c("NA", "-","?","<null>"),stringsAsFactors=F,check.names=FALSE,col.names=NA)
+distsfor4=read.csv("DATA/distsfor4.csv",header=T,na.strings=c("NA", "-","?","<null>"),stringsAsFactors=F,check.names=FALSE,col.names=NA)
+distsfor5=read.csv("DATA/distsfor5.csv",header=T,na.strings=c("NA", "-","?","<null>"),stringsAsFactors=F,check.names=FALSE,col.names=NA)
+distsfor6=read.csv("DATA/distsfor6.csv",header=T,na.strings=c("NA", "-","?","<null>"),stringsAsFactors=F,check.names=FALSE,col.names=NA)
+distsfor7=read.csv("DATA/distsfor7.csv",header=T,na.strings=c("NA", "-","?","<null>"),stringsAsFactors=F,check.names=FALSE,col.names=NA)
+distsfor8=read.csv("DATA/distsfor8.csv",header=T,na.strings=c("NA", "-","?","<null>"),stringsAsFactors=F,check.names=FALSE,col.names=NA)
+distsfor9=read.csv("DATA/distsfor9.csv",header=T,na.strings=c("NA", "-","?","<null>"),stringsAsFactors=F,check.names=FALSE,col.names=NA)
+distsfor10=read.csv("DATA/distsfor10.csv",header=T,na.strings=c("NA", "-","?","<null>"),stringsAsFactors=F,check.names=FALSE,col.names=NA)
+distsfor11=read.csv("DATA/distsfor11.csv",header=T,na.strings=c("NA", "-","?","<null>"),stringsAsFactors=F,check.names=FALSE,col.names=NA)
+distsfor12=read.csv("DATA/distsfor12.csv",header=T,na.strings=c("NA", "-","?","<null>"),stringsAsFactors=F,check.names=FALSE,col.names=NA)
+
 
 
 #### 2. APP USER INTERFACE ####
@@ -149,7 +165,7 @@ ui <- fluidPage(
              tabPanel("Results",div(DT::dataTableOutput("results"),style = 'font-size:90%'),br(),# Button
                       downloadButton("downloadData", "Download table")),
              tabPanel("Distances",div(DT::dataTableOutput("distances"),style = 'font-size:85%'),br()),
-             tabPanel("Z-scores",div(DT::dataTableOutput("zscores"),style = 'font-size:85%'),br()),
+             #tabPanel("Z-scores",div(DT::dataTableOutput("zscores"),style = 'font-size:85%'),br()),
              tabPanel("Percentiles",div(DT::dataTableOutput("percentiles"),style = 'font-size:85%'),br()),
              tabPanel("About",
                       br(),
@@ -303,8 +319,8 @@ server <- function(input, output) {
                 "<b>Distance to cluster centre D2c: </b>", faunal.cluster2$D2c,"<br>",
                 "<b>Distance to cluster centre D2d: </b>", faunal.cluster2$D2d,"<br>",
                 "<b>Faunal Cluster: </b>", faunal.cluster2$FaunalCluster,"<br>",
-                "<b>Z-score: </b>", faunal.cluster2$zscore,"<br>",
-                "<b>Percentile: </b>", faunal.cluster2$percentile),
+                #"<b>Z-score: </b>", faunal.cluster2$zscore,"<br>",
+                "<b>Percentile: </b>", faunal.cluster2$Percentile),
                 radius = 3,stroke = F, color = "black",weight = 1,fill = TRUE, fillColor =~BaseCol(FaunalCluster),fillOpacity = 1,group = "Baseline")%>%
               addLegend(
                 position = "bottomright",
@@ -432,7 +448,7 @@ server <- function(input, output) {
       pred_test <- predict(resultsA, newdata=ShinyTemplate4)
       
 
-      ## Get  phy cluster groupo from raster
+      ## Get  phy cluster group from raster
       Phy <- extract(phyclus,  pos.test[,3:2])
       
       
@@ -539,163 +555,7 @@ server <- function(input, output) {
     }
   })
   
- ## Z-SCORES
-  output$zscores <- DT::renderDataTable({
-    
-    if ( !is.null(res$k_st) )  {
-      
-      ## Split off faunal data
-      ShinyTemplate3=data()[,4:706]
-      #ShinyTemplate3=data[,4:706]#24/05
-      ## Transform faunal data
-      ShinyTemplate4=ShinyTemplate3^(0.25)
-      
-      ## Create a df 'pos.test' for Sample, Latitude_WGS84 and Longitude_WGS84 
-      pos.test=data()[,1:3]
-      #pos.test=data[,1:3]#24/05
-      ## Now use predict function to predict cluster groups for test data.
-      pred_test <- predict(resultsA, newdata=ShinyTemplate4)
-      
 
-      ## Get  phy cluster groupo from raster
-      Phy <- extract(phyclus,  pos.test[,3:2])
-      
-      
- 
-      ## Add cluster group from kmeans results file to df 'pos' which includes 'Sample',
-      # 'Latitude_WGS84' and 'Longitude_WGS84'
-      faunal.cluster.test=cbind(pos.test,pred_test,Phy)#,physdata
-      
-      
-      
-      ## Change name of col 'results$cluster' to 'ClusterNum'
-      names(faunal.cluster.test)[4]<-paste("ClusterNum")
-      names(faunal.cluster.test)[2]<-paste("Lat")
-      names(faunal.cluster.test)[3]<-paste("Long")
-      
-      ## Add a new empty col 'FaunalCluster' to df 'faunal.cluster
-      faunal.cluster.test["Fauna"]=NA
-      
-      ## Populate FaunalCluster col with new names (see dendrogram from Step 21)
-      faunal.cluster.test$Fauna[faunal.cluster.test$ClusterNum == 11] <- "A1"
-      faunal.cluster.test$Fauna[faunal.cluster.test$ClusterNum == 1]<- "A2a"
-      faunal.cluster.test$Fauna[faunal.cluster.test$ClusterNum == 8] <- "A2b"
-      faunal.cluster.test$Fauna[faunal.cluster.test$ClusterNum == 3]<- "B1a"
-      faunal.cluster.test$Fauna[faunal.cluster.test$ClusterNum == 7] <- "B1b"
-      faunal.cluster.test$Fauna[faunal.cluster.test$ClusterNum == 4] <- "C1a"
-      faunal.cluster.test$Fauna[faunal.cluster.test$ClusterNum == 5] <- "C1b"
-      faunal.cluster.test$Fauna[faunal.cluster.test$ClusterNum == 12] <- "D1"
-      faunal.cluster.test$Fauna[faunal.cluster.test$ClusterNum == 2] <- "D2a"
-      faunal.cluster.test$Fauna[faunal.cluster.test$ClusterNum == 10] <- "D2b"
-      faunal.cluster.test$Fauna[faunal.cluster.test$ClusterNum == 6] <- "D2c"
-      faunal.cluster.test$Fauna[faunal.cluster.test$ClusterNum == 9]<- "D2d"
-      
-      ## Note col FaunalCluster is currently a chr - need to covery to a factor
-      faunal.cluster.test$Fauna=as.factor(faunal.cluster.test$Fauna)
-      
-      ## Concatenate Faunal and Physical cluster
-      faunal.cluster.test$PhyFauna=paste(faunal.cluster.test$Phy,faunal.cluster.test$Fauna,sep="_")
-      
-      faunal.cluster.test[,c(1,2,3,5,6,7)]#,6
-      #View(faunal.cluster.test)
-      
-      DistancestoCentersTest <- as.matrix(dist(rbind(results$centers, ShinyTemplate4)))[-(1:12),1:12]
-      
-      ## Add Sample column
-      names(pos.test)
-      DistancetoCentersTest=cbind(as.character(pos.test$Sample),DistancestoCentersTest)
-      
-      ## Update column names
-      colnames(DistancetoCentersTest)=c("Sample","A2a","D2a","B1a","C1a","C1b","D2c","B1b","A2b","D2d","D2b","A1","D1")
-      
-      ## Change column order
-      DistancetoCentersTest=DistancetoCentersTest[,c(1,12,2,9,4,8,5,6,13,3,11,7,10)]
-      
-      ## Change object from matrix to dataframe
-      class(DistancetoCentersTest)
-      DistancetoCentersTest=as.data.frame(DistancetoCentersTest)
-      
-      #str(DistancetoCentersTest)
-      
-      ## Add column for faunal cluster group
-      DistancetoCentersTest2=cbind(DistancetoCentersTest[,1],faunal.cluster.test$Fauna,DistancetoCentersTest[,2:13])
-      colnames(DistancetoCentersTest2)[2]="FaunalCluster"
-      colnames(DistancetoCentersTest2)[1]="Sample"
-      
-      ## Create a copy of'DistancetoCentersTrain3'
-      DistancetoCentersTest3=DistancetoCentersTest2
-      
-      # Change cols into correct format
-      DistancetoCentersTest3$Sample <- as.character(as.character(DistancetoCentersTest3$Sample))
-      DistancetoCentersTest3$FaunalCluster <- as.character(as.character(DistancetoCentersTest3$FaunalCluster))
-      DistancetoCentersTest3$A1 <- as.numeric(as.character(DistancetoCentersTest3$A1))
-      DistancetoCentersTest3$A2a <- as.numeric(as.character(DistancetoCentersTest3$A2a))
-      DistancetoCentersTest3$A2b <- as.numeric(as.character(DistancetoCentersTest3$A2b))
-      DistancetoCentersTest3$B1a <- as.numeric(as.character(DistancetoCentersTest3$B1a))
-      DistancetoCentersTest3$B1b <- as.numeric(as.character(DistancetoCentersTest3$B1b))
-      DistancetoCentersTest3$C1a <- as.numeric(as.character(DistancetoCentersTest3$C1a))
-      DistancetoCentersTest3$C1b <- as.numeric(as.character(DistancetoCentersTest3$C1b))
-      DistancetoCentersTest3$D1 <- as.numeric(as.character(DistancetoCentersTest3$D1))
-      DistancetoCentersTest3$D2a <- as.numeric(as.character(DistancetoCentersTest3$D2a))
-      DistancetoCentersTest3$D2b <- as.numeric(as.character(DistancetoCentersTest3$D2b))
-      DistancetoCentersTest3$D2c <- as.numeric(as.character(DistancetoCentersTest3$D2c))
-      DistancetoCentersTest3$D2d <- as.numeric(as.character(DistancetoCentersTest3$D2d))
-      #str(DistancetoCentersTest3)
-      
-      ## Calculate z-score
-      DistancetoCentersTest3$zA1=(DistancetoCentersTest3$A1-meanA1dist)/sdA1dist
-      DistancetoCentersTest3$zA2a=(DistancetoCentersTest3$A2a-meanA2adist)/sdA2adist
-      DistancetoCentersTest3$zA2b=(DistancetoCentersTest3$A2b-meanA2bdist)/sdA2bdist
-      DistancetoCentersTest3$zB1a=(DistancetoCentersTest3$B1a-meanB1adist)/sdB1adist
-      DistancetoCentersTest3$zB1b=(DistancetoCentersTest3$B1b-meanB1bdist)/sdB1bdist
-      DistancetoCentersTest3$zC1a=(DistancetoCentersTest3$C1a-meanC1adist)/sdC1adist
-      DistancetoCentersTest3$zC1b=(DistancetoCentersTest3$C1b-meanC1bdist)/sdC1bdist
-      DistancetoCentersTest3$zD1=(DistancetoCentersTest3$D1-meanD1dist)/sdD1dist
-      DistancetoCentersTest3$zD2a=(DistancetoCentersTest3$D2a-meanD2adist)/sdD2adist
-      DistancetoCentersTest3$zD2b=(DistancetoCentersTest3$D2b-meanD2bdist)/sdD2bdist
-      DistancetoCentersTest3$zD2c=(DistancetoCentersTest3$D2c-meanD2cdist)/sdD2cdist
-      DistancetoCentersTest3$zD2d=(DistancetoCentersTest3$D2d-meanD2ddist)/sdD2ddist
-      
-      ## Take only the z-scores
-      
-      DistancetoCentersTest4=DistancetoCentersTest3[,c(1,2,15:26)]
-      ## Change numeric columns to 1dp
-      is.num <- sapply(DistancetoCentersTest4, is.numeric)
-      DistancetoCentersTest4[is.num] <- lapply(DistancetoCentersTest4[is.num], round, 1)
-      
-      ## Update column names
-      colnames(DistancetoCentersTest4)=c("Sample","FaunalCluster","A1","A2a","A2b","B1a","B1b","C1a","C1b","D1","D2a","D2b","D2c","D2d")
-      
-      ## Delete irrelevant values
-      DistancetoCentersTest4$A1[DistancetoCentersTest4$FaunalCluster !=  "A1"] <- NA
-      DistancetoCentersTest4$A2a[DistancetoCentersTest4$FaunalCluster !=  "A2a"] <- NA
-      DistancetoCentersTest4$A2b[DistancetoCentersTest4$FaunalCluster !=  "A2b"] <- NA
-      DistancetoCentersTest4$B1a[DistancetoCentersTest4$FaunalCluster !=  "B1a"] <- NA
-      DistancetoCentersTest4$B1b[DistancetoCentersTest4$FaunalCluster !=  "B1b"] <- NA
-      DistancetoCentersTest4$C1a[DistancetoCentersTest4$FaunalCluster !=  "C1a"] <- NA
-      DistancetoCentersTest4$C1b[DistancetoCentersTest4$FaunalCluster !=  "C1b"] <- NA
-      DistancetoCentersTest4$D1[DistancetoCentersTest4$FaunalCluster !=  "D1"] <- NA
-      DistancetoCentersTest4$D2a[DistancetoCentersTest4$FaunalCluster !=  "D2a"] <- NA
-      DistancetoCentersTest4$D2b[DistancetoCentersTest4$FaunalCluster !=  "D2b"] <- NA
-      DistancetoCentersTest4$D2c[DistancetoCentersTest4$FaunalCluster !=  "D2c"] <- NA
-      DistancetoCentersTest4$D2d[DistancetoCentersTest4$FaunalCluster !=  "D2d"] <- NA
-      
-      DistancetoCentersTest4
-      
-      #View(DistancetoCentersTest3)
-      #class(DistancetoCentersTest3)
-    } else {
-      
-      
-      #pos.test=data()[,1:3]
-      
-      ## Change labels for Lat and Long
-      #names(pos.test)[2]<-paste("Lat")
-      #names(pos.test)[3]<-paste("Long")
-      
-      #pos.test
-    }
-  }) 
 
   
   ## Percentiles
@@ -703,9 +563,13 @@ server <- function(input, output) {
     
     if ( !is.null(res$k_st) )  {
       
+      ###########################ADD CODE HERE 15/07/2019 #############################
       ## Split off faunal data
+      #data=read.csv("DATA/ShinyTemplateCompletedRSMP.csv",header=T,na.strings=c("NA", "-","?","<null>"),stringsAsFactors=F,check.names=FALSE)
+      
       ShinyTemplate3=data()[,4:706]
       #ShinyTemplate3=data[,4:706]#24/05
+      
       ## Transform faunal data
       ShinyTemplate4=ShinyTemplate3^(0.25)
       
@@ -715,149 +579,103 @@ server <- function(input, output) {
       ## Now use predict function to predict cluster groups for test data.
       pred_test <- predict(resultsA, newdata=ShinyTemplate4)
       
- 
-      ## Get  phy cluster groupo from raster
-      Phy <- extract(phyclus,  pos.test[,3:2])
       
-
-      
-      ## Add cluster group from kmeans results file to df 'pos' which includes 'Sample',
-      # 'Latitude_WGS84' and 'Longitude_WGS84'
-      faunal.cluster.test=cbind(pos.test,pred_test,Phy)#,physdata
+      testpercentile = rep(0,length(pred_test)) # numeric vector of 0's length 636 (test set) #636
       
       
       
-      ## Change name of col 'results$cluster' to 'ClusterNum'
-      names(faunal.cluster.test)[4]<-paste("ClusterNum")
-      names(faunal.cluster.test)[2]<-paste("Lat")
-      names(faunal.cluster.test)[3]<-paste("Long")
+      for (j in 1:length(pred_test)) {
+        #testcluster = pred_test_JB[j]
+        testcluster = pred_test[j]  # assiged test sample cluster groups 
+        # loop through test cluster group and get distances to cluster centre of assigned group
+        if (testcluster==1) {
+          distfortest = sum((results$centers[1,] - ShinyTemplate4[j,])^2)
+          combined = c(distfortest, distsfor1) }
+        
+        if (testcluster==2) {
+          distfortest = sum((results$centers[2,] - ShinyTemplate4[j,])^2)
+          combined = c(distfortest, distsfor2) }
+        
+        if (testcluster==3) {
+          distfortest = sum((results$centers[3,] - ShinyTemplate4[j,])^2)
+          combined = c(distfortest, distsfor3) }
+        
+        if (testcluster==4) {
+          distfortest = sum((results$centers[4,] - ShinyTemplate4[j,])^2)
+          combined = c(distfortest, distsfor4) }
+        
+        if (testcluster==5) {
+          distfortest = sum((results$centers[5,] - ShinyTemplate4[j,])^2)
+          combined = c(distfortest, distsfor5) }
+        
+        if (testcluster==6) {
+          distfortest = sum((results$centers[6,] - ShinyTemplate4[j,])^2)
+          combined = c(distfortest, distsfor6) }
+        
+        if (testcluster==7) {
+          distfortest = sum((results$centers[7,] - ShinyTemplate4[j,])^2)
+          combined = c(distfortest, distsfor7) }
+        
+        if (testcluster==8) {
+          distfortest = sum((results$centers[8,] - ShinyTemplate4[j,])^2)
+          combined = c(distfortest, distsfor8) }
+        
+        if (testcluster==9) {
+          distfortest = sum((results$centers[9,] - ShinyTemplate4[j,])^2)
+          combined = c(distfortest, distsfor9) }
+        
+        if (testcluster==10) {
+          distfortest = sum((results$centers[10,] - ShinyTemplate4[j,])^2)
+          combined = c(distfortest, distsfor10) }
+        
+        if (testcluster==11) {
+          distfortest = sum((results$centers[11,] - ShinyTemplate4[j,])^2)
+          combined = c(distfortest, distsfor11) }
+        
+        if (testcluster==12) {
+          distfortest = sum((results$centers[12,] - ShinyTemplate4[j,])^2)
+          combined = c(distfortest, distsfor12) }
+        
+        ## rank of sample divided by total number of samples in cluster *100
+        #combined=as.data.frame(combined)#this works but percentils are incorrect
+        ranktest = rank(combined)[1]
+        
+        testpercentile[j] = round(100*(ranktest - 0.5) / length(combined), 1)
+        
+      }
+      ####
+      #### percetile = near 100% means that your test percentile is
+      #### near to the most extreme of the originals in that cluster
+      ####
       
-      ## Add a new empty col 'FaunalCluster' to df 'faunal.cluster
-      faunal.cluster.test["Fauna"]=NA
+      testresults = as.data.frame(cbind(pred_test, testpercentile))
+      str(testresults)
       
+      ## Swap cluster numbers for codes
       ## Populate FaunalCluster col with new names (see dendrogram from Step 21)
-      faunal.cluster.test$Fauna[faunal.cluster.test$ClusterNum == 11] <- "A1"
-      faunal.cluster.test$Fauna[faunal.cluster.test$ClusterNum == 1]<- "A2a"
-      faunal.cluster.test$Fauna[faunal.cluster.test$ClusterNum == 8] <- "A2b"
-      faunal.cluster.test$Fauna[faunal.cluster.test$ClusterNum == 3]<- "B1a"
-      faunal.cluster.test$Fauna[faunal.cluster.test$ClusterNum == 7] <- "B1b"
-      faunal.cluster.test$Fauna[faunal.cluster.test$ClusterNum == 4] <- "C1a"
-      faunal.cluster.test$Fauna[faunal.cluster.test$ClusterNum == 5] <- "C1b"
-      faunal.cluster.test$Fauna[faunal.cluster.test$ClusterNum == 12] <- "D1"
-      faunal.cluster.test$Fauna[faunal.cluster.test$ClusterNum == 2] <- "D2a"
-      faunal.cluster.test$Fauna[faunal.cluster.test$ClusterNum == 10] <- "D2b"
-      faunal.cluster.test$Fauna[faunal.cluster.test$ClusterNum == 6] <- "D2c"
-      faunal.cluster.test$Fauna[faunal.cluster.test$ClusterNum == 9]<- "D2d"
-      
-      ## Note col FaunalCluster is currently a chr - need to covery to a factor
-      faunal.cluster.test$Fauna=as.factor(faunal.cluster.test$Fauna)
-      
-      ## Concatenate Faunal and Physical cluster
-      faunal.cluster.test$PhyFauna=paste(faunal.cluster.test$Phy,faunal.cluster.test$Fauna,sep="_")
-      
-      faunal.cluster.test[,c(1,2,3,5,6,7)]#,6
-      #View(faunal.cluster.test)
-      
-      DistancestoCentersTest <- as.matrix(dist(rbind(results$centers, ShinyTemplate4)))[-(1:12),1:12]
-      
-      ## Add Sample column
-      names(pos.test)
-      DistancetoCentersTest=cbind(as.character(pos.test$Sample),DistancestoCentersTest)
-      
-      ## Update column names
-      colnames(DistancetoCentersTest)=c("Sample","A2a","D2a","B1a","C1a","C1b","D2c","B1b","A2b","D2d","D2b","A1","D1")
-      
-      ## Change column order
-      DistancetoCentersTest=DistancetoCentersTest[,c(1,12,2,9,4,8,5,6,13,3,11,7,10)]
-      
-      ## Change object from matrix to dataframe
-      class(DistancetoCentersTest)
-      DistancetoCentersTest=as.data.frame(DistancetoCentersTest)
-      
-      #str(DistancetoCentersTest)
-      
-      ## Add column for faunal cluster group
-      DistancetoCentersTest2=cbind(DistancetoCentersTest[,1],faunal.cluster.test$Fauna,DistancetoCentersTest[,2:13])
-      colnames(DistancetoCentersTest2)[2]="FaunalCluster"
-      colnames(DistancetoCentersTest2)[1]="Sample"
-      
-      ## Create a copy of'DistancetoCentersTrain3'
-      DistancetoCentersTest3=DistancetoCentersTest2
-      
-      # Change cols into correct format
-      DistancetoCentersTest3$Sample <- as.character(as.character(DistancetoCentersTest3$Sample))
-      DistancetoCentersTest3$FaunalCluster <- as.character(as.character(DistancetoCentersTest3$FaunalCluster))
-      DistancetoCentersTest3$A1 <- as.numeric(as.character(DistancetoCentersTest3$A1))
-      DistancetoCentersTest3$A2a <- as.numeric(as.character(DistancetoCentersTest3$A2a))
-      DistancetoCentersTest3$A2b <- as.numeric(as.character(DistancetoCentersTest3$A2b))
-      DistancetoCentersTest3$B1a <- as.numeric(as.character(DistancetoCentersTest3$B1a))
-      DistancetoCentersTest3$B1b <- as.numeric(as.character(DistancetoCentersTest3$B1b))
-      DistancetoCentersTest3$C1a <- as.numeric(as.character(DistancetoCentersTest3$C1a))
-      DistancetoCentersTest3$C1b <- as.numeric(as.character(DistancetoCentersTest3$C1b))
-      DistancetoCentersTest3$D1 <- as.numeric(as.character(DistancetoCentersTest3$D1))
-      DistancetoCentersTest3$D2a <- as.numeric(as.character(DistancetoCentersTest3$D2a))
-      DistancetoCentersTest3$D2b <- as.numeric(as.character(DistancetoCentersTest3$D2b))
-      DistancetoCentersTest3$D2c <- as.numeric(as.character(DistancetoCentersTest3$D2c))
-      DistancetoCentersTest3$D2d <- as.numeric(as.character(DistancetoCentersTest3$D2d))
-      #str(DistancetoCentersTest3)
-      
-      ## Calculate z-score
-      DistancetoCentersTest3$zA1=(DistancetoCentersTest3$A1-meanA1dist)/sdA1dist
-      DistancetoCentersTest3$zA2a=(DistancetoCentersTest3$A2a-meanA2adist)/sdA2adist
-      DistancetoCentersTest3$zA2b=(DistancetoCentersTest3$A2b-meanA2bdist)/sdA2bdist
-      DistancetoCentersTest3$zB1a=(DistancetoCentersTest3$B1a-meanB1adist)/sdB1adist
-      DistancetoCentersTest3$zB1b=(DistancetoCentersTest3$B1b-meanB1bdist)/sdB1bdist
-      DistancetoCentersTest3$zC1a=(DistancetoCentersTest3$C1a-meanC1adist)/sdC1adist
-      DistancetoCentersTest3$zC1b=(DistancetoCentersTest3$C1b-meanC1bdist)/sdC1bdist
-      DistancetoCentersTest3$zD1=(DistancetoCentersTest3$D1-meanD1dist)/sdD1dist
-      DistancetoCentersTest3$zD2a=(DistancetoCentersTest3$D2a-meanD2adist)/sdD2adist
-      DistancetoCentersTest3$zD2b=(DistancetoCentersTest3$D2b-meanD2bdist)/sdD2bdist
-      DistancetoCentersTest3$zD2c=(DistancetoCentersTest3$D2c-meanD2cdist)/sdD2cdist
-      DistancetoCentersTest3$zD2d=(DistancetoCentersTest3$D2d-meanD2ddist)/sdD2ddist
+      testresults$pred_test[testresults$pred_test == 11] <- "A1"
+      testresults$pred_test[testresults$pred_test == 1]<- "A2a"
+      testresults$pred_test[testresults$pred_test == 8] <- "A2b"
+      testresults$pred_test[testresults$pred_test == 3]<- "B1a"
+      testresults$pred_test[testresults$pred_test == 7] <- "B1b"
+      testresults$pred_test[testresults$pred_test == 4] <- "C1a"
+      testresults$pred_test[testresults$pred_test == 5] <- "C1b"
+      testresults$pred_test[testresults$pred_test == 12] <- "D1"
+      testresults$pred_test[testresults$pred_test == 2] <- "D2a"
+      testresults$pred_test[testresults$pred_test == 10] <- "D2b"
+      testresults$pred_test[testresults$pred_test == 6] <- "D2c"
+      testresults$pred_test[testresults$pred_test == 9]<- "D2d"
       
       
-      ## Calculate z-scores percentiles
-      DistancetoCentersTest3$pA1=round(pnorm(DistancetoCentersTest3$zA1)*100,1)
-      DistancetoCentersTest3$pA2a=round(pnorm(DistancetoCentersTest3$zA2a)*100,1)
-      DistancetoCentersTest3$pA2b=round(pnorm(DistancetoCentersTest3$zA2b)*100,1)
-      DistancetoCentersTest3$pB1a=round(pnorm(DistancetoCentersTest3$zB1a)*100,1)
-      DistancetoCentersTest3$pB1b=round(pnorm(DistancetoCentersTest3$zB1b)*100,1)
-      DistancetoCentersTest3$pC1a=round(pnorm(DistancetoCentersTest3$zC1a)*100,1)
-      DistancetoCentersTest3$pC1b=round(pnorm(DistancetoCentersTest3$zC1b)*100,1)
-      DistancetoCentersTest3$pD1=round(pnorm(DistancetoCentersTest3$zD1)*100,1)
-      DistancetoCentersTest3$pD2a=round(pnorm(DistancetoCentersTest3$zD2a)*100,1)
-      DistancetoCentersTest3$pD2b=round(pnorm(DistancetoCentersTest3$zD2b)*100,1)
-      DistancetoCentersTest3$pD2c=round(pnorm(DistancetoCentersTest3$zD2c)*100,1)
-      DistancetoCentersTest3$pD2d=round(pnorm(DistancetoCentersTest3$zD2d)*100,1)
+      ## Note col FaunalCluster is currently a chr - need to covert to a factor
+      testresults$pred_test=as.factor(testresults$pred_test)
+      str(testresults) # TEST DATA CLUSTER GROUP AND ASSOCIATED PERCENTILE
       
-      ## Take only the z-scores
+      ## Change names of cols in object 'testresults'
+      names(testresults)[1]<-paste("Cluster")
+      names(testresults)[2]<-paste("Percentile")
+      testresults
       
-      DistancetoCentersTest4=DistancetoCentersTest3[,c(1,2,27:38)]
-      ## Change numeric columns to 1dp
-      is.num <- sapply(DistancetoCentersTest4, is.numeric)
-      DistancetoCentersTest4[is.num] <- lapply(DistancetoCentersTest4[is.num], round, 1)
-      
-      ## Update column names
-      colnames(DistancetoCentersTest4)=c("Sample","FaunalCluster","A1","A2a","A2b","B1a","B1b","C1a","C1b","D1","D2a","D2b","D2c","D2d")
-      
-      
-      ## Delete irrelevant values
-      DistancetoCentersTest4$A1[DistancetoCentersTest4$FaunalCluster !=  "A1"] <- NA
-      DistancetoCentersTest4$A2a[DistancetoCentersTest4$FaunalCluster !=  "A2a"] <- NA
-      DistancetoCentersTest4$A2b[DistancetoCentersTest4$FaunalCluster !=  "A2b"] <- NA
-      DistancetoCentersTest4$B1a[DistancetoCentersTest4$FaunalCluster !=  "B1a"] <- NA
-      DistancetoCentersTest4$B1b[DistancetoCentersTest4$FaunalCluster !=  "B1b"] <- NA
-      DistancetoCentersTest4$C1a[DistancetoCentersTest4$FaunalCluster !=  "C1a"] <- NA
-      DistancetoCentersTest4$C1b[DistancetoCentersTest4$FaunalCluster !=  "C1b"] <- NA
-      DistancetoCentersTest4$D1[DistancetoCentersTest4$FaunalCluster !=  "D1"] <- NA
-      DistancetoCentersTest4$D2a[DistancetoCentersTest4$FaunalCluster !=  "D2a"] <- NA
-      DistancetoCentersTest4$D2b[DistancetoCentersTest4$FaunalCluster !=  "D2b"] <- NA
-      DistancetoCentersTest4$D2c[DistancetoCentersTest4$FaunalCluster !=  "D2c"] <- NA
-      DistancetoCentersTest4$D2d[DistancetoCentersTest4$FaunalCluster !=  "D2d"] <- NA
-      
-      DistancetoCentersTest4
-      #View(DistancetoCentersTest3)
-      #class(DistancetoCentersTest3)
     } else {
       
       
