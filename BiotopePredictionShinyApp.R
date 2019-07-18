@@ -1,4 +1,3 @@
-
 ## Set working directory
 setwd('C:/Users/kmc00/OneDrive - CEFAS/R_PROJECTS/BiotopePredictionShinyApp')
 
@@ -12,7 +11,6 @@ library(mapview)
 library(raster)
 library(plyr)
 library(shiny)
-
 
 
 #### 1. BRING IN REQUIRED DATA ####
@@ -35,78 +33,18 @@ BaseCol <- colorFactor(c("#9999F8","#99FFFF","#9BDDE6","#F8DEF8","#D6ADEB","#99E
 ## Bring in raster data for phycluster
 phyclus = raster('DATA/PhysicalClusterClip.tif')
 
-## Create layer for 'Licensed' polygons
-#licence = readOGR("DATA","Aggregates_Licence_20151112")
+## Create layer for aggregate dredging areas
+# licence = readOGR("DATA","Aggregates_Licence_20151112")
 
-#mcz = readOGR("DATA","DESIGNATED")
+## Create layer for MCZ polygons
+# mcz = readOGR("DATA","DESIGNATED")
 
-## Bring in distances, z-scores and percentiles for baseline dataset
+## Bring in distances and percentiles for baseline dataset (generated using BiotopePredictionScript.R)
 basedist=read.csv("DATA/DistancetoCentersTrain4.csv",header=T,na.strings=c("NA", "-","?","<null>"),stringsAsFactors=F,check.names=FALSE)
-
-## Mean and sd for baseline cluster distances
-#meanA1dist=7.998403
-#sdA1dist=1.245949
-#meanA2adist=7.417848
-#sdA2adist=1.305278
-#meanA2bdist=6.955519
-#sdA2bdist=1.017589
-#meanB1adist=6.39505
-#sdB1adist=0.7995207
-#meanB1bdist=5.418755
-#sdB1bdist=0.8244385
-#meanC1adist=5.60087
-#sdC1adist=0.9520959
-#meanC1bdist=6.4334
-#sdC1bdist=0.9144225
-#meanD1dist=6.970568
-#sdD1dist=1.265555
-#meanD2adist=4.863829
-#sdD2adist=0.9588489
-#meanD2bdist=5.282591
-#sdD2bdist=0.7700981
-#meanD2cdist=2.963243
-#sdD2cdist=0.9613814
-#meanD2ddist=4.420252
-#sdD2ddist=0.906758
 
 ## Check baseline dataset and baseline distance from clustering have same length
 dim(basedist)#[1] 27432    42
 dim(faunal.cluster)# 27432     7
-
-## Delete irrelevant values
-#basedist$zA1[basedist$FaunalCluster !=  "A1"] <- 0
-#basedist$zA2a[basedist$FaunalCluster !=  "A2a"] <- 0
-#basedist$zA2b[basedist$FaunalCluster !=  "A2b"] <- 0
-#basedist$zB1a[basedist$FaunalCluster !=  "B1a"] <- 0
-#basedist$zB1b[basedist$FaunalCluster !=  "B1b"] <- 0
-#basedist$zC1a[basedist$FaunalCluster !=  "C1a"] <- 0
-#basedist$zC1b[basedist$FaunalCluster !=  "C1b"] <- 0
-#basedist$zD1[basedist$FaunalCluster !=  "D1"] <- 0
-#basedist$zD2a[basedist$FaunalCluster !=  "D2a"] <- 0
-#basedist$zD2b[basedist$FaunalCluster !=  "D2b"] <- 0
-#basedist$zD2c[basedist$FaunalCluster !=  "D2c"] <- 0
-#basedist$zD2d[basedist$FaunalCluster !=  "D2d"] <- 0
-
-#basedist$pA1[basedist$FaunalCluster !=  "A1"] <- 0
-#basedist$pA2a[basedist$FaunalCluster !=  "A2a"] <- 0
-#basedist$pA2b[basedist$FaunalCluster !=  "A2b"] <- 0
-#basedist$pB1a[basedist$FaunalCluster !=  "B1a"] <- 0
-#basedist$pB1b[basedist$FaunalCluster !=  "B1b"] <- 0
-#basedist$pC1a[basedist$FaunalCluster !=  "C1a"] <- 0
-#basedist$pC1b[basedist$FaunalCluster !=  "C1b"] <- 0
-#basedist$pD1[basedist$FaunalCluster !=  "D1"] <- 0
-#basedist$pD2a[basedist$FaunalCluster !=  "D2a"] <- 0
-#basedist$pD2b[basedist$FaunalCluster !=  "D2b"] <- 0
-#basedist$pD2c[basedist$FaunalCluster !=  "D2c"] <- 0
-#basedist$pD2d[basedist$FaunalCluster !=  "D2d"] <- 0
-
-## Add new cols for zscore and percentile
-#basedist$zscore <- do.call(`pmax`, basedist[16:27])
-#basedist$percentile <- do.call(`pmax`, basedist[28:39])
-names(basedist)
-
-## Take only required columns
-#basedist2=basedist[,c(1:15,41,42,40)]
 
 ## Change numeric columns to 1dp
 is.num <- sapply(basedist, is.numeric)
@@ -116,8 +54,7 @@ basedist[is.num] <- lapply(basedist[is.num], round, 1)
 faunal.cluster2=cbind(faunal.cluster,basedist[,4:17])
 names(faunal.cluster2)
 
-## Load baseline distances by cluster group
-
+## Load baseline distances by cluster group (data required to calculate test data percentiles)
 distsfor1=read.csv("DATA/distsfor1.csv",header=T,na.strings=c("NA", "-","?","<null>"),stringsAsFactors=F,check.names=FALSE,col.names=NA)
 distsfor2=read.csv("DATA/distsfor2.csv",header=T,na.strings=c("NA", "-","?","<null>"),stringsAsFactors=F,check.names=FALSE,col.names=NA)
 distsfor3=read.csv("DATA/distsfor3.csv",header=T,na.strings=c("NA", "-","?","<null>"),stringsAsFactors=F,check.names=FALSE,col.names=NA)
@@ -155,32 +92,28 @@ ui <- fluidPage(
            actionButton("match","Match")),
     
     column(5,leafletOutput("plot2",width = "100%", height="850px")), 
-           #br(),
-           #downloadButton("downloadPlot", "Download plot"),style='border-left: 1px solid grey'),
-    
-    
+           
     
     column(5,style='border-left: 1px solid grey',
            tabsetPanel(
-             tabPanel("Results",div(DT::dataTableOutput("results"),style = 'font-size:90%'),br(),# Button
+             tabPanel("Results",div(DT::dataTableOutput("results"),style = 'font-size:85%'),br(),# Button
                       downloadButton("downloadData", "Download table")),
              tabPanel("Distances",div(DT::dataTableOutput("distances"),style = 'font-size:85%'),br()),
-             #tabPanel("Z-scores",div(DT::dataTableOutput("zscores"),style = 'font-size:85%'),br()),
              tabPanel("Percentiles",div(DT::dataTableOutput("percentiles"),style = 'font-size:85%'),br()),
              tabPanel("Cluster Characteristics",tags$img(src="Table1.png")),
              tabPanel("About",
                       br(),
-                      p("This tool matches new faunal data to the existing faunal cluster groups identified in Cooper and Barry (2017, http://rdcu.be/wi6C). For a full decription of the methodology see Cooper (2019).",
+                      p("This tool matches new macrofaunal data to the existing faunal cluster groups identified in Cooper and Barry (2017, http://rdcu.be/wi6C). For a full decription of the app methodology see Cooper (2019, <insert link to paper>).",
                         br(),
-                        br(),"The physical cluster group shown in the table is also based on work of Cooper and Barry (2017). Sampling stations are partitioned into 10 groups based on a k-means clustering of physical variables (Salinity, Temperature, Chlorophyll a, Suspended Particulate Matter, Water depth, Wave Orbital Velocity, Average current, Stress and Suspended Particulate Matter). Within the app, test sample coordinates are used to extract the physical cluster group from a 100% coverage geotiff file. This file was created using Random Forest modelling of point sample data. Knowledge of the physical cluster group identity of sampling stations is required for the Regional Seabed Monitoring Programme (RSMP).")))
+                        br(),"The physical cluster group shown in the Results tab is also based on work of Cooper and Barry (2017). Sampling stations are partitioned into 10 groups based on a k-means clustering of physical variables (Salinity, Temperature, Chlorophyll a, Suspended Particulate Matter, Water depth, Wave Orbital Velocity, Average current, Stress and Suspended Particulate Matter). Within the app, test sample coordinates are used to extract the physical cluster group from a 100% coverage geotiff file. This file was created using Random Forest modelling of point sample data. Knowledge of the physical cluster group identity of sampling stations is required for the Regional Seabed Monitoring Programme (RSMP).")))
            
     )))
 
 textAlign = 'center'
 
 
-#### 3. APP SERVER ####
 
+#### 3. APP SERVER ####
 
 server <- function(input, output) {
   
@@ -221,8 +154,6 @@ server <- function(input, output) {
   })
   
   
-  
-
   
   ## Create the object with no values
   res <- reactiveValues(k_st = NULL)
@@ -288,21 +219,13 @@ server <- function(input, output) {
     ## Bounding box to display
     box <-  c(MinLon,MinLat,MaxLon, MaxLat ) 
     
-    ## Baseline sample - muted colours 
-    #BaseCol <- colorFactor(c("#9999F8","#99FFFF","#9BDDE6","#F8DEF8","#D6ADEB","#99EB99","#D6FFD6","#E19999","#FF9999","#FFD199","#FFFF99","#E1E19A"), faunal.cluster$FaunalCluster)
-    
-    ## Baseline sample - full colours 
-    #BaseCol <- colorFactor(c("blue2","cyan1","#05aae1","plum2","darkorchid3","green3","palegreen1","#b40202","red1","darkorange","yellow","#b4b404"), faunal.cluster$FaunalCluster)
-    
-    
     TestCol<-colorFactor(cols,faunal.cluster.test$FaunalCluster)
     
     ## List of items needed for maps
     res$k_st <- list( faunal.cluster.test, faunal.cluster,   TestCol, BaseCol, box)
     
     observe(leafletProxy("plot2",data=faunal.cluster.test)%>%clearMarkers() %>%
-              #addProviderTiles(providers$Esri.OceanBasemap,options = providerTileOptions(noWrap = TRUE))%>%
-              addCircleMarkers(data=faunal.cluster.test,~as.numeric(Longitude_WGS84), ~as.numeric(Latitude_WGS84), popup = paste0("<b>Sample: </b>", faunal.cluster.test$Sample),radius = 3,stroke = TRUE, color = "black",weight = 1,fill = TRUE, fillColor = ~TestCol(FaunalCluster),fillOpacity = 1,group = "Test")%>%fitBounds(box()[1], box()[2], box()[3], box()[4])%>%addCircleMarkers(data=faunal.cluster2,~as.numeric(Longitude_WGS84), ~as.numeric(Latitude_WGS84), popup =paste0(
+                addCircleMarkers(data=faunal.cluster.test,~as.numeric(Longitude_WGS84), ~as.numeric(Latitude_WGS84), popup = paste0("<b>Sample: </b>", faunal.cluster.test$Sample),radius = 3,stroke = TRUE, color = "black",weight = 1,fill = TRUE, fillColor = ~TestCol(FaunalCluster),fillOpacity = 1,group = "Test")%>%fitBounds(box()[1], box()[2], box()[3], box()[4])%>%addCircleMarkers(data=faunal.cluster2,~as.numeric(Longitude_WGS84), ~as.numeric(Latitude_WGS84), popup =paste0(
                 "<b>Sample: </b>", faunal.cluster2$Sample, "<br>",
                 "<b>SurveyName: </b>", faunal.cluster2$SurveyName,"<br>",
                 "<b>Gear: </b>", faunal.cluster2$Gear,"<br>",
@@ -320,7 +243,6 @@ server <- function(input, output) {
                 "<b>Distance to cluster centre D2c: </b>", faunal.cluster2$D2c,"<br>",
                 "<b>Distance to cluster centre D2d: </b>", faunal.cluster2$D2d,"<br>",
                 "<b>Faunal Cluster: </b>", faunal.cluster2$FaunalCluster,"<br>",
-                #"<b>Z-score: </b>", faunal.cluster2$zscore,"<br>",
                 "<b>Percentile: </b>", faunal.cluster2$Percentile),
                 radius = 3,stroke = F, color = "black",weight = 1,fill = TRUE, fillColor =~BaseCol(FaunalCluster),fillOpacity = 1,group = "Baseline")%>%
               addLegend(
@@ -331,7 +253,6 @@ server <- function(input, output) {
                 title = "Faunal Cluster"
               )%>%
               addLayersControl(
-                #baseGroups=("Baseline"),
                 overlayGroups = c("Test","Baseline"),options = layersControlOptions(collapsed = FALSE))%>% hideGroup("Baseline")
     )
     
@@ -341,16 +262,12 @@ server <- function(input, output) {
   ## Map
   output$plot2 <- renderLeaflet({
     
-    
     ## Basic map
     leaflet() %>%
       addProviderTiles(providers$Esri.OceanBasemap,options = providerTileOptions(noWrap = TRUE))%>%
       #addPolygons(data=licence, weight = 1,fillColor="white",fillOpacity = 0)%>%
       #addPolygons(data=mcz, weight = 1,color="orange",fillColor="orange",fillOpacity = 0)%>%
-      
-      #addProviderTiles(providers$Esri.WorldImagery,options = providerTileOptions(noWrap = TRUE))%>%
       setView(-3,54.6,zoom=5.5)
-    
     
   })
   
@@ -358,7 +275,6 @@ server <- function(input, output) {
   observe(leafletProxy("plot2",data=pos())%>%
             addCircleMarkers(data=pos(),~as.numeric(Longitude_WGS84), ~as.numeric(Latitude_WGS84), popup = ~as.character(Sample),radius = 3,stroke = F, color = "black",weight = 1,fill = TRUE, fillColor ="black",fillOpacity = 1,group = "Baseline")%>%fitBounds(box()[1], box()[2], box()[3], box()[4])
   )
-  
   
   
   
@@ -378,16 +294,13 @@ server <- function(input, output) {
       ## Now use predict function to predict cluster groups for test data.
       pred_test <- predict(resultsA, newdata=ShinyTemplate4)
       
-
-      ## Get  phy cluster groupo from raster
+      ## Get  phy cluster group from raster
       Phy <- extract(phyclus,  pos.test[,3:2])
 
       
       ## Add cluster group from kmeans results file to df 'pos' which includes 'Sample',
       # 'Latitude_WGS84' and 'Longitude_WGS84'
       faunal.cluster.test=cbind(pos.test,pred_test,Phy)#,physdata
-      
-      
       
       ## Change name of col 'results$cluster' to 'ClusterNum'
       names(faunal.cluster.test)[4]<-paste("ClusterNum")
@@ -421,7 +334,6 @@ server <- function(input, output) {
       
     } else {
       
-      
       pos.test=data()[,1:3]
       
       ## Change labels for Lat and Long
@@ -439,28 +351,21 @@ server <- function(input, output) {
       
       ## Split off faunal data
       ShinyTemplate3=data()[,4:706]
-      #ShinyTemplate3=data[,4:706]#24/05
+     
       ## Transform faunal data
       ShinyTemplate4=ShinyTemplate3^(0.25)
       
       ## Create a df 'pos.test' for Sample, Latitude_WGS84 and Longitude_WGS84 
       pos.test=data()[,1:3]
-      #pos.test=data[,1:3]#24/05
+     
       ## Now use predict function to predict cluster groups for test data.
       pred_test <- predict(resultsA, newdata=ShinyTemplate4)
       
-
       ## Get  phy cluster group from raster
       Phy <- extract(phyclus,  pos.test[,3:2])
       
-      
-      
- 
-      ## Add cluster group from kmeans results file to df 'pos' which includes 'Sample',
-      # 'Latitude_WGS84' and 'Longitude_WGS84'
+      ## Add cluster group from kmeans results file to df 'pos' which includes 'Sample', Latitude_WGS84' and 'Longitude_WGS84'
       faunal.cluster.test=cbind(pos.test,pred_test,Phy)#,physdata
-      
-      
       
       ## Change name of col 'results$cluster' to 'ClusterNum'
       names(faunal.cluster.test)[4]<-paste("ClusterNum")
@@ -509,8 +414,6 @@ server <- function(input, output) {
       class(DistancetoCentersTest)
       DistancetoCentersTest=as.data.frame(DistancetoCentersTest)
       
-      #str(DistancetoCentersTest)
-      
       ## Add column for faunal cluster group
       DistancetoCentersTest2=cbind(DistancetoCentersTest[,1],faunal.cluster.test$Fauna,DistancetoCentersTest[,2:13])
       colnames(DistancetoCentersTest2)[2]="Cluster"
@@ -534,26 +437,17 @@ server <- function(input, output) {
       DistancetoCentersTest3$D2b <- as.numeric(as.character(DistancetoCentersTest3$D2b))
       DistancetoCentersTest3$D2c <- as.numeric(as.character(DistancetoCentersTest3$D2c))
       DistancetoCentersTest3$D2d <- as.numeric(as.character(DistancetoCentersTest3$D2d))
-      #str(DistancetoCentersTest3)
-      
+
       ## Change numeric columns to 1dp
       is.num <- sapply(DistancetoCentersTest3, is.numeric)
       DistancetoCentersTest3[is.num] <- lapply(DistancetoCentersTest3[is.num], round, 1)
       
       DistancetoCentersTest3
       
-      #View(DistancetoCentersTest3)
-      #class(DistancetoCentersTest3)
+
     } else {
       
       
-      #pos.test=data()[,1:3]
-      
-      ## Change labels for Lat and Long
-      #names(pos.test)[2]<-paste("Lat")
-      #names(pos.test)[3]<-paste("Long")
-      
-      #pos.test
     }
   })
   
@@ -563,29 +457,23 @@ server <- function(input, output) {
     
     if ( !is.null(res$k_st) )  {
       
-      ###########################ADD CODE HERE 15/07/2019 #############################
       ## Split off faunal data
-      #data=read.csv("DATA/ShinyTemplateCompletedRSMP.csv",header=T,na.strings=c("NA", "-","?","<null>"),stringsAsFactors=F,check.names=FALSE)
-      
       ShinyTemplate3=data()[,4:706]
-      #ShinyTemplate3=data[,4:706]#24/05
       
       ## Transform faunal data
       ShinyTemplate4=ShinyTemplate3^(0.25)
       
       ## Create a df 'pos.test' for Sample, Latitude_WGS84 and Longitude_WGS84 
       pos.test=data()[,1:3]
-      #pos.test=data[,1:3]#24/05
+      
       ## Now use predict function to predict cluster groups for test data.
       pred_test <- predict(resultsA, newdata=ShinyTemplate4)
       
       
       testpercentile = rep(0,length(pred_test)) # numeric vector of 0's length 636 (test set) #636
       
-      
-      
       for (j in 1:length(pred_test)) {
-        #testcluster = pred_test_JB[j]
+        
         testcluster = pred_test[j]  # assiged test sample cluster groups 
         # loop through test cluster group and get distances to cluster centre of assigned group
         if (testcluster==1) {
@@ -637,24 +525,19 @@ server <- function(input, output) {
           combined = c(distfortest, distsfor12) }
         
         ## rank of sample divided by total number of samples in cluster *100
-        #combined=as.data.frame(combined)#this works but percentiles are incorrect
         combined=unlist(combined)
         ranktest = rank(combined)[1]
         
         testpercentile[j] = round(100*(ranktest - 0.5) / length(combined), 1)
         
       }
-      ####
-      #### percetile = near 100% means that your test percentile is
-      #### near to the most extreme of the originals in that cluster
-      ####
       
-      #testresults = as.data.frame(cbind(pred_test, testpercentile))
+      #### percetile = near 100% means that your test percentile is near to the most extreme of the originals in that cluster
+
       testresults = as.data.frame(cbind(pos.test[1],pred_test, testpercentile))
       str(testresults)
       
       ## Swap cluster numbers for codes
-      ## Populate FaunalCluster col with new names (see dendrogram from Step 21)
       testresults$pred_test[testresults$pred_test == 11] <- "A1"
       testresults$pred_test[testresults$pred_test == 1]<- "A2a"
       testresults$pred_test[testresults$pred_test == 8] <- "A2b"
@@ -671,7 +554,7 @@ server <- function(input, output) {
       
       ## Note col FaunalCluster is currently a chr - need to covert to a factor
       testresults$pred_test=as.factor(testresults$pred_test)
-      str(testresults) # TEST DATA CLUSTER GROUP AND ASSOCIATED PERCENTILE
+      str(testresults) # Test data cluster group and associated percentile
       
       ## Change names of cols in object 'testresults'
       names(testresults)[1]<-paste("Sample")
@@ -682,13 +565,6 @@ server <- function(input, output) {
     } else {
       
       
-      #pos.test=data()[,1:3]
-      
-      ## Change labels for Lat and Long
-      #names(pos.test)[2]<-paste("Lat")
-      #names(pos.test)[3]<-paste("Long")
-      
-      #pos.test
     }
   })
   
@@ -698,8 +574,7 @@ server <- function(input, output) {
       paste("download",".csv",sep="")#data2-",Sys.Date(),
     },
     content = function(file) {
-      ######
-      #### PREPARE TEST DATA ####
+    
       ## Split off faunal data
       ShinyTemplate3=data()[,4:706]
       
@@ -707,7 +582,6 @@ server <- function(input, output) {
       ShinyTemplate4=ShinyTemplate3^(0.25)
       
       ## Create a df 'pos.test' for Sample, Latitude_WGS84 and Longitude_WGS84. NB/You may need to update the colrefs for Lat and Long 
-      
       pos.test=data()[,1:3]
       
       ## Now use predict function to predict cluster groups for test data.
@@ -716,8 +590,7 @@ server <- function(input, output) {
       ## Get  phy cluster groupo from raster
       Phy <- extract(phyclus,  pos.test[,3:2])
       
-      ## Add cluster group from kmeans results file to df 'pos' which includes 'Sample',
-      # 'Latitude_WGS84' and 'Longitude_WGS84'
+      ## Add cluster group from kmeans results file to df 'pos' which includes 'Sample','Latitude_WGS84' and 'Longitude_WGS84'
       faunal.cluster.test=cbind(pos.test,pred_test,Phy)
       names(faunal.cluster.test)
       
@@ -742,13 +615,12 @@ server <- function(input, output) {
       faunal.cluster.test$Fauna[faunal.cluster.test$ClusterNum == 9]<- "D2d"
       
       ## Note col FaunalCluster is currently a chr - need to covery to a factor
-      #str(faunal.cluster.test)
       faunal.cluster.test$Fauna=as.factor(faunal.cluster.test$Fauna)
       
       ## Concatenate Faunal and Physical cluster
       faunal.cluster.test$PhyFauna=paste(faunal.cluster.test$Phy,faunal.cluster.test$Fauna,sep="_")
-      
-      write.csv(faunal.cluster.test[,c(1,2,3,5,6,7)],file,row.names = F)
+      names(faunal.cluster.test)[6]<-paste("Cluster")
+      write.csv(faunal.cluster.test[,c(1,2,3,6,5,7)],file,row.names = F)
     })
   
   
