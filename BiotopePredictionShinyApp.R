@@ -1,3 +1,5 @@
+#### This script is for the R shiny App 'Faunal Cluster ID tool'. For a detailed explanation of the methodology see Cooper and Barry (2019) ####
+
 ## Set working directory
 setwd('C:/Users/kmc00/OneDrive - CEFAS/R_PROJECTS/BiotopePredictionShinyApp')
 
